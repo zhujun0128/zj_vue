@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="vue.js"></script>
+    <script src="jquery.js"></script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        ul{
+            width: 950px;
+            height: 750px;
+            margin: 0 auto;
+            text-align: center;
+            list-style: none;
+            margin-top: 50px;
+        }
+        ul li{
+            width: 300px;
+            height: 360px;
+            border: 1px solid;
+            float: left;
+            margin-left: 10px;
+            margin-bottom: 10px;
+        }
+        ul li img{
+            width: 300px;
+            height: 300px;
+        }
+        input[type="number"]{
+            width: 100px;
+        }
+        button{
+            margin-left: 20px;
+        }
+        span{
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <ul>
+            <li v-for="(item,index) in tables">
+                <img :src="item.img" alt="">
+                <p>{{item.name}}</p>
+                <input type="number" v-model="num[index]" :disabled="item.flag">
+                <button :disabled="item.flag" @click="isDisabled(item)">加入购物车</button>
+            </li>
+        </ul>
+        <p style="width: 950px;margin: 0 auto;">当前共选择了<span>{{sum}}</span>件商品</p>
+    </div>
+    <script>
+        new Vue({
+            el:"#app",
+            data:{
+                tables:[],
+                num:[0,0,0,0,0,0]
+            },
+            created(){
+                var _this = this;
+                /*发送请求*/
+                this.getData("get","http://127.0.0.1:3000").then((data)=>{
+                    _this.tables = data;
+                    console.log(_this.tables);
+                }).catch((err)=>{
+                    console.log(err);
+                });
+            },
+            methods:{
+                isDisabled(item){
+                    item.flag = true;
+                },
+                getData(method,url){
+                    return new Promise((resolve,reject)=>{
+                        $.ajax({
+                            type:method,
+                            url:url,
+                            success(data){
+                                resolve(data);
+                            },
+                            error(err){
+                                reject(err);
+                            }
+                        })
+                    })
+                }
+            },
+            computed:{
+                sum(){
+                    var sum = 0;
+                    this.num.forEach((val)=>{
+                        sum += parseInt(val);
+                    });
+                    return sum;
+                }
+            },
+            watch:{
+                num(newNum,oldNum){
+                    newNum.forEach((val,index)=>{
+                        if(val < 0){
+                            this.num[index] = 0;
+                        }
+                    })
+                }
+            }
+        })
+    </script>
+</body>
+</html>
