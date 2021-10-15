@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="vue.js"></script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        ul{
+            list-style: none;
+        }
+        #top{
+            width: 100%;
+            height: 100px;
+            left: 30px;
+            position: relative;
+            border-bottom: 2px solid gray;
+        }
+        #top > p{
+            position: absolute;
+            bottom: 10px;
+            color: gray;
+            font-weight: bold;
+        }
+        #main{
+            width: 100%;
+            height: 850px;
+            left: 30px;
+            position: relative;
+            display: flex;
+        }
+        #left{
+            width: 200px;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        #left ul li{
+            width: 180px;
+            height: 40px;
+            line-height: 40px;
+            margin-right: 20px;
+            border: 1px solid gray;
+            text-align: center;
+            cursor: pointer;
+        }
+        #right{
+            width: 100%;
+            height: 100%;
+            background-color: lightgray;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <template id="topItem">
+        <div id="top">
+            <p>首页 > <span>{{current}}</span></p>
+        </div>
+    </template>
+    <!--<template id="leftItem">
+        <div id="left">
+            <ul>
+                <li v-for="(item,index) in list" @click="skip(index)">{{item.text}}</li>
+            </ul>
+        </div>
+    </template>-->
+    <template id="rightItem">
+        <div id="right">
+            <p v-for="item in todos" v-if="item.seen">{{item.text}}</p>
+        </div>
+    </template>
+
+    <div id="app">
+        <top-item :current="currentBread"></top-item>
+        <div id="main">
+            <div id="left">
+                <ul>
+                    <li v-for="(item,index) in asideItem" @click="skip(index)">{{item.text}}</li>
+                </ul>
+            </div>
+            <right-item :todos="show"></right-item>
+        </div>
+    </div>
+    <script>
+        var app = new Vue({
+            el:"#app",
+            data:{
+                asideItem:[
+                    {text:"关于我"},
+                    {text:"介绍我"},
+                    {text:"等等我"}
+                ],
+                show:[
+                    {seen:true,text:"我是“关于我”的一个模板"},
+                    {seen:false,text:"我是“介绍我”的一个模板"},
+                    {seen:false,text:"我是“等等我”的一个模板"}
+                ],
+                currentBread:"关于我"
+            },
+            methods:{
+                skip(index){
+                    for(var i = 0;i < this.show.length;i++){
+                        this.show[i].seen = false;
+                    }
+                    this.show[index].seen = true;
+                    this.currentBread = this.asideItem[index].text;
+                }
+            },
+            components:{
+                "top-item":{
+                    template:"#topItem",
+                    props:["current"]
+                },
+                "left-item":{
+                    template:"#leftItem",
+                    props:["list"]
+                },
+                "right-item":{
+                    template:"#rightItem",
+                    props:["todos"]
+                }
+            }
+        })
+    </script>
+</body>
+</html>
